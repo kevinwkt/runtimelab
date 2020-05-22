@@ -53,7 +53,23 @@ jobs:
 - template: /eng/pipelines/common/checkout-job.yml
 
 #
-# Build with Debug config and Release runtimeConfiguration
+# Build with Debug config and checked runtimeConfiguration
+#
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/common/global-build-job.yml
+    buildConfig: checked
+    platforms:
+    - Linux_x64
+    - Windows_NT_x64
+    jobParameters:
+      testGroup: innerloop
+      nameSuffix: Runtime_Debug
+      buildArgs: -s clr+libs+installer -c debug -runtimeConfiguration checked
+      extraStepsTemplate: /eng/pipelines/runtimelab/runtimelab-post-build-steps.yml
+
+#
+# Build with Release config and Release runtimeConfiguration
 #
 - template: /eng/pipelines/common/platform-matrix.yml
   parameters:
@@ -64,20 +80,6 @@ jobs:
     - Windows_NT_x64
     jobParameters:
       testGroup: innerloop
-      nameSuffix: Runtime_Debug
-      buildArgs: -s clr+libs+installer -c debug -runtimeConfiguration release
-
-#
-# Build with Release config and Release runtimeConfiguration
-#
-- template: /eng/pipelines/common/platform-matrix.yml
-  parameters:
-    jobTemplate: /eng/pipelines/common/global-build-job.yml
-    buildConfig: debug
-    platforms:
-    - Linux_x64
-    - Windows_NT_x64
-    jobParameters:
-      testGroup: innerloop
       nameSuffix: Runtime_Release
       buildArgs: -s clr+libs+installer -c release -runtimeConfiguration release
+      extraStepsTemplate: /eng/pipelines/runtimelab/runtimelab-post-build-steps.yml
