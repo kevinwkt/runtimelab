@@ -1,0 +1,26 @@
+# Steps used to prepare the Artifacts Staging Directory with required files for
+# executing libraries tests
+steps:
+  - task: CopyFiles@2
+    displayName: Prepare testhost folder to publish
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)/artifacts/bin/testhost
+      targetFolder: $(Build.ArtifactStagingDirectory)/artifacts/bin/testhost
+  
+  - task: CopyFiles@2
+    displayName: Prepare artifacts toolset folder to publish
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)/artifacts/toolset
+      targetFolder: $(Build.ArtifactStagingDirectory)/artifacts/toolset
+  
+  - task: CopyFiles@2
+    displayName: Prepare runtime folder to publish
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)/artifacts/bin/runtime
+      targetFolder: $(Build.ArtifactStagingDirectory)/artifacts/bin/runtime
+  
+  - task: CopyFiles@2
+    displayName: Prepare ref folder to publish
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)/artifacts/bin/ref
+      targetFolder: $(Build.ArtifactStagingDirectory)/artifacts/bin/ref

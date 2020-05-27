@@ -81,5 +81,5 @@ jobs:
     jobParameters:
       testGroup: innerloop
       nameSuffix: Runtime_Release
-      buildArgs: -s clr+libs+installer -c release -runtimeConfiguration release
+      buildArgs: -s clr+libs+installer -c release
       extraStepsTemplate: /eng/pipelines/runtimelab/runtimelab-post-build-steps.yml
