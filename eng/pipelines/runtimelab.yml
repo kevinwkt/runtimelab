@@ -64,7 +64,6 @@ jobs:
     - Windows_NT_x64
     jobParameters:
       testGroup: innerloop
-      nameSuffix: Runtime_Debug
       buildArgs: -s clr+libs+installer -c debug -runtimeConfiguration checked
       extraStepsTemplate: /eng/pipelines/runtimelab/runtimelab-post-build-steps.yml
 
@@ -74,12 +73,111 @@ jobs:
 - template: /eng/pipelines/common/platform-matrix.yml
   parameters:
     jobTemplate: /eng/pipelines/common/global-build-job.yml
-    buildConfig: release
+    buildConfig: Release
     platforms:
     - Linux_x64
     - Windows_NT_x64
     jobParameters:
       testGroup: innerloop
-      nameSuffix: Runtime_Release
-      buildArgs: -s clr+libs+installer -c release
+      buildArgs: -s clr+libs+installer -c $(_BuildConfig)
       extraStepsTemplate: /eng/pipelines/runtimelab/runtimelab-post-build-steps.yml
+
+#
+# Build with Release allConfigurations to produce packages and run tests
+#
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/common/global-build-job.yml
+    buildConfig: release
+    platforms:
+    - Windows_NT_x64
+    jobParameters:
+      testGroup: innerloop
+      nameSuffix: All_Configurations
+      buildArgs: -s clr.corelib+libs -c $(_BuildConfig) -allConfigurations
+
+#
+# CoreCLR Test builds using live libraries release build
+#
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/common/templates/runtimes/build-test-job.yml
+    buildConfig: checked
+    platforms:
+    - Linux_x64
+    jobParameters:
+      testGroup: innerloop
+      liveLibrariesBuildConfig: Release
+      overrideDependsOn: true
+      dependsOn:
+      - build_Linux_x64_checked_
+      - build_Linux_x64_Release_
+
+#
+# Libraries Test Build
+#
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/libraries/build-test-job.yml
+    buildConfig: Release
+    platforms:
+    - Linux_x64
+    jobParameters:
+      isOfficialBuild: false
+      liveRuntimeBuildConfig: Release
+      testScope: innerloop
+      overrideDependsOn: true
+      dependsOn:
+      - build_Linux_x64_Release_
+
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/libraries/build-test-job.yml
+    buildConfig: Release
+    platforms:
+    - Windows_NT_x64
+    jobParameters:
+      isOfficialBuild: false
+      liveRuntimeBuildConfig: Release
+      testScope: innerloop
+      overrideDependsOn: true
+      dependsOn:
+      - build_Windows_NT_x64_Release_
+
+#
+# Libraries Release Test Execution against a release coreclr runtime
+# Only when the PR contains a libraries change
+#
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/libraries/run-test-job.yml
+    buildConfig: Release
+    platforms:
+    - Linux_x64
+    helixQueuesTemplate: /eng/pipelines/libraries/helix-queues-setup.yml
+    jobParameters:
+      isOfficialBuild: false
+      testScope: innerloop
+      liveRuntimeBuildConfig: Release
+      dependsOnTestBuildConfiguration: Release
+      dependsOnTestArchitecture: x64
+      overrideDependsOn: true
+      dependsOn:
+      - libraries_test_build_Linux_x64_Release
+
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/libraries/run-test-job.yml
+    buildConfig: Release
+    platforms:
+    - Windows_NT_x64
+    helixQueuesTemplate: /eng/pipelines/libraries/helix-queues-setup.yml
+    jobParameters:
+      isOfficialBuild: false
+      testScope: innerloop
+      liveRuntimeBuildConfig: Release
+      dependsOnTestBuildConfiguration: Release
+      dependsOnTestArchitecture: x64
+      overrideDependsOn: true
+      dependsOn:
+      - libraries_test_build_Windows_NT_x64_Release

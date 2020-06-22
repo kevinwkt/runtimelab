@@ -1,0 +1,26 @@
+#Prepare shared framework assets for publishing
+steps:
+- task: CopyFiles@2
+  displayName: Prepare shared framework ref assemblies to publish
+  inputs:
+    sourceFolder: $(Build.SourcesDirectory)/artifacts/bin/ref/microsoft.netcore.app
+    targetFolder: $(Build.ArtifactStagingDirectory)/artifacts/bin/ref/microsoft.netcore.app
+
+- task: CopyFiles@2
+  displayName: Prepare shared framework runtime folder to publish
+  inputs:
+    sourceFolder: $(Build.SourcesDirectory)/artifacts/bin/pkg
+    targetFolder: $(Build.ArtifactStagingDirectory)/artifacts/bin/pkg
+
+- task: CopyFiles@2
+  displayName: Prepare native folder to publish
+  inputs:
+    sourceFolder: $(Build.SourcesDirectory)/artifacts/bin/native
+    targetFolder: $(Build.ArtifactStagingDirectory)/artifacts/bin/native
+
+- task: CopyFiles@2
+  displayName: Prepare artifacts packages folder to publish
+  inputs:
+    sourceFolder: $(Build.SourcesDirectory)/artifacts/packages
+    targetFolder: $(Build.ArtifactStagingDirectory)/artifacts/packages
+  condition: and(succeeded(), eq(variables['_librariesBuildProducedPackages'], true))
