@@ -156,6 +156,7 @@ jobs:
     - Linux_x64
     helixQueuesTemplate: /eng/pipelines/libraries/helix-queues-setup.yml
     jobParameters:
+      isFullMatrix: false
       isOfficialBuild: false
       testScope: innerloop
       liveRuntimeBuildConfig: Release
@@ -173,6 +174,7 @@ jobs:
     - Windows_NT_x64
     helixQueuesTemplate: /eng/pipelines/libraries/helix-queues-setup.yml
     jobParameters:
+      isFullMatrix: false
       isOfficialBuild: false
       testScope: innerloop
       liveRuntimeBuildConfig: Release
