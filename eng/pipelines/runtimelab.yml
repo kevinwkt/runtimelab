@@ -114,6 +114,41 @@ jobs:
       - build_Linux_x64_Release_
 
 #
+# CoreCLR Test executions using live libraries
+# Only when CoreCLR is changed
+#
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/common/templates/runtimes/run-test-job.yml
+    buildConfig: checked
+    platforms:
+    - Linux_x64
+    helixQueueGroup: pr
+    helixQueuesTemplate: /eng/pipelines/coreclr/templates/helix-queues-setup.yml
+    jobParameters:
+      testGroup: innerloop
+      liveLibrariesBuildConfig: Release
+      overrideDependsOn: true
+      dependsOn:
+      - coreclr_common_test_build_p0_AnyOS_AnyCPU_checked
+
+- template: /eng/pipelines/common/platform-matrix.yml
+  parameters:
+    jobTemplate: /eng/pipelines/common/templates/runtimes/run-test-job.yml
+    buildConfig: checked
+    platforms:
+    - Windows_NT_x64
+    helixQueueGroup: pr
+    helixQueuesTemplate: /eng/pipelines/coreclr/templates/helix-queues-setup.yml
+    jobParameters:
+      testGroup: innerloop
+      liveLibrariesBuildConfig: Release
+      overrideDependsOn: true
+      dependsOn:
+      - coreclr_common_test_build_p0_AnyOS_AnyCPU_checked
+      - build_Windows_NT_x64_checked_
+
+#
 # Libraries Test Build
 #
 - template: /eng/pipelines/common/platform-matrix.yml
